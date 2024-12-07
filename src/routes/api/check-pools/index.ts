@@ -13,7 +13,8 @@ export const onGet: RequestHandler = async ({ json, env }) => {
     for (const pool of pools) {
       const poolSetting = settings.find(s => s.poolId === pool.id && s.enabled);
       
-      if (poolSetting && pool.percentageAPRs < poolSetting.threshold) {
+      if (poolSetting && pool.percentageAPRs[0] < poolSetting.threshold) {
+        console.log(pool.percentageAPRs[0]);
         await sendPoolAlert(pool, poolSetting.threshold);
       }
     }

@@ -1,16 +1,24 @@
-import { component$, useSignal, useVisibleTask$, $, useStore } from '@builder.io/qwik';
+import { component$, useSignal, $, useStore, useTask$ } from '@builder.io/qwik';
 import type { DocumentHead } from '@builder.io/qwik-city';
 import { fetchPools } from '~/services/pool.service';
 import type { Pool, PoolNotificationSettings } from '~/types/pool';
+import { server$ } from '@builder.io/qwik-city';
+import { checkingPools } from '~/services/threshold.service';
+
+//const delay = (time: number) => new Promise((res) => setTimeout(res, time));
+
+
+export const serverGreeter = server$(checkingPools);
 
 export default component$(() => {
   const pools = useSignal<Pool[]>([]);
   const settings = useStore<{ list: PoolNotificationSettings[] }>({ list: [] });
   const loading = useSignal(true);
   const error = useSignal<string | null>(null);
+  const notify = useSignal(false);
 
   // Load pools on component mount
-  useVisibleTask$(async () => {
+  useTask$(async () => {
     try {
       loading.value = true;
       error.value = null;
@@ -22,12 +30,32 @@ export default component$(() => {
     }
   });
 
-  const updateThreshold = $((poolId: string, threshold: number) => {
+  useTask$(async ({ track, cleanup }) => {
+    // Passing a signal directly is more efficient than using a function.
+    const newText = track(settings);
+    
+    await serverGreeter(newText.list);
+
+    const update = async () => {
+      console.log(notify.value);
+      if (notify.value) {
+        await serverGreeter(settings.list);
+      }
+    };
+
+    const id = setInterval(update, 10000);
+    if (!notify.value) {
+      cleanup(() => clearInterval(id));
+    }
+  });
+
+  const updateThreshold = $((poolId: string, threshold: number, address: string) => {
     const existingIndex = settings.list.findIndex(s => s.poolId === poolId);
     if (existingIndex >= 0) {
       settings.list[existingIndex].threshold = threshold;
     } else {
-      settings.list = [...settings.list, { poolId, threshold, enabled: true }];
+      settings.list = [...settings.list, { poolId, threshold, enabled: true, address }];
+      notify.value = true;
     }
   });
 
@@ -36,6 +64,8 @@ export default component$(() => {
     if (existingIndex >= 0) {
       settings.list[existingIndex].enabled = !settings.list[existingIndex].enabled;
     }
+    const notifications = settings.list.filter(s => s.enabled);
+    notify.value = notifications.length > 0;
   });
 
   return (
@@ -67,7 +97,7 @@ export default component$(() => {
                     type="number"
                     placeholder="APR Threshold"
                     value={poolSetting?.threshold || ''}
-                    onChange$={(e) => updateThreshold(pool.id, parseFloat((e.target as HTMLInputElement).value))}
+                    onChange$={(e) => updateThreshold(pool.id, parseFloat((e.target as HTMLInputElement).value), pool.address)}
                     class="border rounded px-3 py-2 w-32"
                   />
                   

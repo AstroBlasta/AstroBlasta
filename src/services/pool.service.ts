@@ -1,25 +1,22 @@
 import type { Pool } from '~/types/pool';
 
 interface AstroVaultResponse {
-  pools: Array<{
-    id: string;
-    name: string;
-    percentageAPRs: number;
-    lp_staking_info: {
-      tvl: number;
-    };
-    token1Symbol: string;
-    token2Symbol: string;
-  }>;
+  data: Array<Pool>;
 }
 
-export async function fetchPools(): Promise<Pool[]> {
+export async function fetchPools(addressIds?: string[]): Promise<Pool[]> {
   try {
-    const response = await fetch('https://ext.astrovault.io/pool', {
+    const url = new URL('/pool', 'https://ext.astrovault.io');
+    if (addressIds && addressIds.length) {
+      url.search = new URLSearchParams({ addresses: addressIds.join(',') }).toString();
+      console.log(url);
+    }
+    
+    const response = await fetch(url.toString(), {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
-      }
+      },
     });
 
     if (!response.ok) {
@@ -27,7 +24,7 @@ export async function fetchPools(): Promise<Pool[]> {
     }
 
     const data: AstroVaultResponse = await response.json();
-    console.log(data);
+    
     if (!data || !Array.isArray(data.data)) {
       console.error('Invalid response format from AstroVault API');
       return [];
