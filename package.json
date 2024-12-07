@@ -13,7 +13,7 @@
     "build": "qwik build",
     "build.client": "vite build",
     "build.preview": "vite build --ssr src/entry.preview.tsx",
-    "build.server": "vite build -c adapters/static/vite.config.ts",
+    "build.server": "vite build -c adapters/express/vite.config.ts",
     "build.types": "tsc --incremental --noEmit",
     "dev": "vite --mode ssr",
     "dev.debug": "node --inspect-brk ./node_modules/vite/bin/vite.js --mode ssr --force",
@@ -21,18 +21,22 @@
     "fmt.check": "prettier --check .",
     "lint": "eslint \"src/**/*.ts*\"",
     "preview": "qwik build preview && vite preview --open",
+    "serve": "node server/entry.express",
     "start": "vite --open --mode ssr",
     "qwik": "qwik"
   },
   "devDependencies": {
     "@builder.io/qwik": "^1.7.3",
     "@builder.io/qwik-city": "^1.7.3",
+    "@types/compression": "^1.7.2",
     "@types/eslint": "^8.56.10",
+    "@types/express": "^4.17.19",
     "@types/node": "^20.12.7",
     "@types/node-telegram-bot-api": "^0.64.7",
     "@typescript-eslint/eslint-plugin": "^7.7.1",
     "@typescript-eslint/parser": "^7.7.1",
     "autoprefixer": "^10.4.19",
+    "compression": "^1.7.4",
     "eslint": "^8.57.0",
     "eslint-plugin-qwik": "^1.7.3",
     "postcss": "^8.4.39",
@@ -46,6 +50,7 @@
   },
   "dependencies": {
     "dotenv": "^16.4.7",
+    "express": "4.20.0",
     "node-telegram-bot-api": "^0.64.0"
   }
 }

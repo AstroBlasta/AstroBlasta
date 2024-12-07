@@ -1,6 +1,6 @@
 import { component$ } from '@builder.io/qwik';
 import styles from './header.module.css';
-import logo from '/Users/krishanu8219/Documents/AstroBlasta/src/routes/logo.png'; 
+import logo from '../../../media/logo.png';
 
 export default component$(() => {
   return (

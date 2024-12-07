@@ -4,6 +4,8 @@ import { fetchPools } from '~/services/pool.service';
 import type { Pool, PoolNotificationSettings } from '~/types/pool';
 import { server$ } from '@builder.io/qwik-city';
 import { checkingPools } from '~/services/threshold.service';
+import type { PoolInfo } from "~/types/poolInfo";
+import { fetchInfo, getLabel } from "~/services/info.service";
 
 export const serverGreeter = server$(checkingPools);
 
@@ -13,6 +15,7 @@ export default component$(() => {
   const loading = useSignal(true);
   const error = useSignal<string | null>(null);
   const notify = useSignal(false);
+  const poolInfo = useSignal<PoolInfo[]>([]);
 
   // Load pools on component mount
   useTask$(async () => {
@@ -20,6 +23,8 @@ export default component$(() => {
       loading.value = true;
       error.value = null;
       pools.value = await fetchPools();
+      poolInfo.value = await fetchInfo();
+      console.log(poolInfo.value);
     } catch (e) {
       error.value = 'Failed to load pools. Please try again later.';
     } finally {
@@ -85,7 +90,7 @@ export default component$(() => {
                 <div class="bg-white rounded-lg shadow-lg p-6">
                   <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-semibold text-gray-800">
-                      {pool.token1Symbol}-{pool.token2Symbol}
+                      {getLabel(pool.address, poolInfo.value)}
                     </h2>
                     <span class="text-lg font-bold text-green-600">
                       {pool.percentageAPRs}% APR

@@ -9,7 +9,6 @@ export async function fetchPools(addressIds?: string[]): Promise<Pool[]> {
     const url = new URL('/pool', 'https://ext.astrovault.io');
     if (addressIds && addressIds.length) {
       url.search = new URLSearchParams({ addresses: addressIds.join(',') }).toString();
-      console.log(url);
     }
     
     const response = await fetch(url.toString(), {
