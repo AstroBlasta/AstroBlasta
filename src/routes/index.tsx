@@ -34,12 +34,13 @@ export default component$(() => {
 
   useTask$(async ({ track, cleanup }) => {
     const newText = track(settings);
+    const newPoolInfo = track(poolInfo);
     
-    await serverGreeter(newText.list);
+    await serverGreeter(newText.list, newPoolInfo);
 
     const update = async () => {
       if (notify.value) {
-        await serverGreeter(settings.list);
+        await serverGreeter(settings.list, poolInfo.value);
       }
     };
 
