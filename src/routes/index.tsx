@@ -98,7 +98,7 @@ export default component$(() => {
                     placeholder="APR Threshold"
                     value={poolSetting?.threshold || ''}
                     onChange$={(e) => updateThreshold(pool.id, parseFloat((e.target as HTMLInputElement).value), pool.address)}
-                    class="border rounded px-3 py-2 w-32"
+                    class="border rounded px-3 py-2 w-32 text-black"
                   />
                   
                   <label class="flex items-center gap-2">

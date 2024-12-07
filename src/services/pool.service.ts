@@ -30,6 +30,11 @@ export async function fetchPools(addressIds?: string[]): Promise<Pool[]> {
       return [];
     }
 
+    /** sort data.data by percentageAPRs */
+    data.data = data.data.sort((a, b) => {
+      return b.percentageAPRs[0] - a.percentageAPRs[0];
+    });
+
     return data.data as Pool[];
   } catch (error) {
     console.error('Error fetching pools:', error);

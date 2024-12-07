@@ -12,7 +12,7 @@ export async function checkingPools(settings: PoolNotificationSettings[]) {
         for (const pool of pools) {
           const poolSetting = settings.find(s => s.poolId === pool.id && s.enabled);
           console.log(poolSetting);
-          if (poolSetting && pool.percentageAPRs[0] > poolSetting.threshold) {
+          if (poolSetting && pool.percentageAPRs[0] < poolSetting.threshold) {
             console.log(pool.percentageAPRs[0]);
             await sendPoolAlert(pool, poolSetting.threshold);
           }
