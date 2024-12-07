@@ -5,9 +5,6 @@ import type { Pool, PoolNotificationSettings } from '~/types/pool';
 import { server$ } from '@builder.io/qwik-city';
 import { checkingPools } from '~/services/threshold.service';
 
-//const delay = (time: number) => new Promise((res) => setTimeout(res, time));
-
-
 export const serverGreeter = server$(checkingPools);
 
 export default component$(() => {
@@ -31,13 +28,11 @@ export default component$(() => {
   });
 
   useTask$(async ({ track, cleanup }) => {
-    // Passing a signal directly is more efficient than using a function.
     const newText = track(settings);
     
     await serverGreeter(newText.list);
 
     const update = async () => {
-      console.log(notify.value);
       if (notify.value) {
         await serverGreeter(settings.list);
       }
@@ -70,7 +65,11 @@ export default component$(() => {
 
   return (
     <div class="container mx-auto px-4 py-8">
-      <h1 class="text-4xl font-bold mb-8">AstroVault Pool Monitor</h1>
+      <div class="text-center mb-8">
+        <h1 class="text-5xl font-extrabold text-gray-800 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 p-4 rounded-lg shadow-lg">
+          AstroVault Pool Monitor
+        </h1>
+      </div>
       
       {loading.value ? (
         <div class="text-center">Loading pools...</div>
@@ -82,37 +81,39 @@ export default component$(() => {
             const poolSetting = settings.list.find(s => s.poolId === pool.id);
             
             return (
-              <div key={pool.id} class="bg-white rounded-lg shadow-md p-6">
-                <div class="flex justify-between items-center">
-                  <h2 class="text-xl font-semibold">
-                    {pool.token1Symbol}-{pool.token2Symbol}
-                  </h2>
-                  <span class="text-lg font-bold text-green-600">
-                    {pool.percentageAPRs}% APR
-                  </span>
-                </div>
-                
-                <div class="mt-4 flex items-center gap-4">
-                  <input
-                    type="number"
-                    placeholder="APR Threshold"
-                    value={poolSetting?.threshold || ''}
-                    onChange$={(e) => updateThreshold(pool.id, parseFloat((e.target as HTMLInputElement).value), pool.address)}
-                    class="border rounded px-3 py-2 w-32 text-black"
-                  />
+              <div key={pool.id} class="relative p-1 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 rounded-lg">
+                <div class="bg-white rounded-lg shadow-lg p-6">
+                  <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-xl font-semibold text-gray-800">
+                      {pool.token1Symbol}-{pool.token2Symbol}
+                    </h2>
+                    <span class="text-lg font-bold text-green-600">
+                      {pool.percentageAPRs}% APR
+                    </span>
+                  </div>
                   
-                  <label class="flex items-center gap-2">
+                  <div class="mt-4 flex items-center gap-4">
                     <input
-                      type="checkbox"
-                      checked={poolSetting?.enabled}
-                      onChange$={() => toggleNotification(pool.id)}
+                      type="number"
+                      placeholder="APR Threshold"
+                      value={poolSetting?.threshold || ''}
+                      onChange$={(e) => updateThreshold(pool.id, parseFloat((e.target as HTMLInputElement).value), pool.address)}
+                      class="border rounded px-3 py-2 w-32 text-black"
                     />
-                    Enable Notifications
-                  </label>
-                </div>
-                
-                <div class="mt-2 text-sm text-gray-600">
-                  TVL: ${pool.lp_staking_info.tvl.toLocaleString()}
+                    
+                    <label class="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        checked={poolSetting?.enabled}
+                        onChange$={() => toggleNotification(pool.id)}
+                      />
+                      Enable Notifications
+                    </label>
+                  </div>
+                  
+                  <div class="mt-2 text-sm text-gray-600">
+                    TVL: ${pool.lp_staking_info.tvl.toLocaleString()}
+                  </div>
                 </div>
               </div>
             );
