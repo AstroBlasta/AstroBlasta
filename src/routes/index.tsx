@@ -77,7 +77,7 @@ export default component$(() => {
       ) : error.value ? (
         <div class="text-center text-red-600">{error.value}</div>
       ) : (
-        <div class="grid gap-6">
+        <div class="grid gap-6 grid-cols-2">
           {pools.value.map((pool) => {
             const poolSetting = settings.list.find(s => s.poolId === pool.id);
             

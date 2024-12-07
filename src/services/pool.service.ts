@@ -30,7 +30,7 @@ export async function fetchPools(addressIds?: string[]): Promise<Pool[]> {
       return [];
     }
 
-    return data.data;
+    return data.data as Pool[];
   } catch (error) {
     console.error('Error fetching pools:', error);
     return [];
