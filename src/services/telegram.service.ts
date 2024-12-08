@@ -1,6 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
 import type { Pool } from '~/types/pool';
-import { PoolInfo } from "~/types/poolInfo";
 
 console.log('Telegram service loaded');
 
