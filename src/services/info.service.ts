@@ -19,7 +19,6 @@ export async function fetchInfo(): Promise<PoolInfo[]> {
     }
 
     const data = await response.json();
-
     const archway: PoolInfo[] = data.data.archway['stable-pool'].map(
       (pool: any): PoolInfo => {
         return {
@@ -74,16 +73,20 @@ export async function fetchInfo(): Promise<PoolInfo[]> {
       console.error('Invalid response format from AstroVault API');
       return [];
     }
-
     return pools;
   } catch (error) {
-    console.error('Error fetching pools:', error);
+    console.error('Error fetching pool info:', error);
     return [];
   }
 }
 
-export function getLabel(address: string, pools: PoolInfo[]): string {
-  console.log(pools);
-  const pool = pools.find(p => p.address === address);
-  return pool ? pool.label : 'hola';
+export function getLabel(address: string, poolInfo: PoolInfo[]): { label: string, poolName: string } {
+  const pool = poolInfo.find(p => p.address === address);
+  if (!pool) return { label: address, poolName: '' };
+
+  const [poolName, tokenInfo] = pool.label.split('-');
+  const formattedPoolName = poolName.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+  const formattedTokens = tokenInfo.replace(/_/g, ' / ');
+
+  return { label: formattedTokens, poolName: formattedPoolName };
 }
