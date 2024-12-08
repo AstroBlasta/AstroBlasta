@@ -56,7 +56,6 @@ export default component$(() => {
       settings.list[existingIndex].threshold = threshold;
     } else {
       settings.list = [...settings.list, { poolId, threshold, enabled: true, address }];
-      notify.value = true;
     }
   });
 
@@ -87,7 +86,7 @@ export default component$(() => {
             const poolSetting = settings.list.find(s => s.poolId === pool.id);
             
             return (
-              <div key={pool.id} class="relative p-1 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 rounded-lg">
+              <div key={pool.id} class="relative p-1 bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 rounded-lg transform transition-transform hover:scale-105 hover:shadow-lg">
                 <div class="bg-white rounded-lg shadow-lg p-6">
                   <div class="flex justify-between items-center mb-4">
                     <h2 class="text-xl font-semibold text-gray-800">
@@ -104,7 +103,7 @@ export default component$(() => {
                       placeholder="APR Threshold"
                       value={poolSetting?.threshold || ''}
                       onChange$={(e) => updateThreshold(pool.id, parseFloat((e.target as HTMLInputElement).value), pool.address)}
-                      class="border rounded px-3 py-2 w-42 text-black"
+                      class="border rounded px-3 py-2 w-[80%] text-black" // Decreased width by 10%
                     />
                     
                     <label class="flex items-center gap-2">
@@ -115,10 +114,6 @@ export default component$(() => {
                       />
                       Enable Notifications
                     </label>
-                  </div>
-                  
-                  <div class="mt-2 text-sm text-gray-600">
-                    TVL: ${pool.lp_staking_info.tvl.toLocaleString()}
                   </div>
                 </div>
               </div>
